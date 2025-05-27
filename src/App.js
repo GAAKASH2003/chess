@@ -1,24 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
-
+import "./App.css";
+import Board from "./components/Board/Board";
+import AppContext from "./contexts/Context";
+import { reducer } from "./reducer/reducer";
+import { useReducer } from "react";
+import { initialState } from "./constant";
+import PromotionModal from "./components/Modal/PromotionModal";
+import { Status } from "./constant";
 function App() {
+  const [appState, dispatch] = useReducer(reducer, initialState);
+  const providerState = {
+    appState,
+    dispatch,
+  };
+  if (appState.status === Status.stalemate) {
+    return <div>{appState.status}</div>;
+  }
+  if (appState.status === Status.insufficient) {
+    return <div>{appState.status}</div>;
+  }
+  if (appState.status.includes("wins")) {
+    return <div>{appState.status}</div>;
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppContext.Provider value={providerState}>
+      <div className="App">
+        <Board />
+        <PromotionModal />
+      </div>
+    </AppContext.Provider>
   );
 }
 

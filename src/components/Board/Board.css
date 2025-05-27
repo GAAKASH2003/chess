@@ -1,0 +1,85 @@
+@import "../../constants.css";
+
+.board {
+  display: grid;
+  position: relative;
+  align-items: center;
+  /* height: 75%;
+  width: 75%; */
+  grid-template-columns:
+    calc(0.25 * var(--tile-size)) calc(8 * var(--tile-size))
+    calc(0.25 * var(--tile-size));
+  grid-template-rows: calc(0.25 * var(--tile-size)) calc(8 * var(--tile-size)) calc(
+      0.25 * var(--tile-size)
+    );
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(8, var(--tile-size));
+  grid-template-rows: repeat(8, var(--tile-size));
+  width: calc(8 * var(--tile-size));
+  color: black;
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tile--light {
+  background-color: var(--light-tile);
+}
+
+.tile--dark {
+  background-color: var(--dark-tile);
+}
+
+.tile-index {
+  font-size: calc(0.2 * var(--tile-size));
+  color: var(--dark-tile);
+  opacity: 0.5;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+
+.highlight:after {
+  display: block;
+  position: absolute;
+  content: "";
+  width: calc(0.5 * var(--tile-size));
+  height: calc(0.5 * var(--tile-size));
+  background: var(--highlight);
+  border-radius: 50%;
+  left: 25%;
+  top: 25%;
+}
+
+.attacking:after {
+  display: block;
+  position: absolute;
+  content: "";
+  border: 6px solid var(--highlight);
+  width: calc(var(--tile-size) - 12px);
+  height: calc(var(--tile-size) - 12px);
+  border-radius: 50%;
+  left: 0;
+  top: 0;
+}
+
+.checked:after {
+  display: block;
+  position: absolute;
+  content: "";
+  width: var(--tile-size);
+  height: var(--tile-size);
+  background: var(--check);
+  border-radius: 20px;
+  left: 0;
+  top: 0;
+}
