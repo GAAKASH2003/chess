@@ -1,6 +1,6 @@
 import { copyPosition } from "../helper";
 
-const API_URL = "YOUR_CHESS_AI_API_ENDPOINT"; // Replace with your actual API endpoint
+const API_URL = "YOUR_CHESS_AI_API_ENDPOINT";
 
 export const getAIMove = async (position) => {
   try {
@@ -23,7 +23,7 @@ export const getAIMove = async (position) => {
     const data = {
       move: {
         from: [6, 0],
-        to: [6, 5],
+        to: [5, 0],
       },
     };
 

@@ -11,7 +11,7 @@ import {
   detectCheckmate,
   detectInsufficientMaterial,
 } from "../../reducer/actions/move";
-
+import { getAIMove } from "../../services/aiService";
 // import { useState } from "react";
 import {
   makeNewMove,
@@ -23,9 +23,8 @@ import arbiter from "../../arbiter/arbiter";
 const Pieces = () => {
   const ref = useRef();
   const { appState, dispatch } = useAppContext();
-  console.log("appState", appState);
+
   const currentState = appState.position[appState.position.length - 1];
-  console.log("currentState", currentState);
 
   const calculateCoordinates = (e) => {
     const { width, height, left, top } = ref.current.getBoundingClientRect();
@@ -46,12 +45,69 @@ const Pieces = () => {
       dispatch(updateCastling(direction));
     }
   };
-  const move = (e) => {
+
+  const getAiMove = async (currentState) => {
+    const aiMove = await getAIMove(currentState);
+
+    if (aiMove) {
+      const { from, to } = aiMove;
+      const piece = currentState[from[0]][from[1]];
+      const castleDirection =
+        appState.castleDirection[`${piece.startsWith("w") ? "b" : "w"}`];
+      const opponent = piece.startsWith("w") ? "b" : "w";
+
+      const newPosition = arbiter.performMove({
+        piece,
+        rank: from[0],
+        file: from[1],
+        currentPosition: currentState,
+        x: to[0],
+        y: to[1],
+      });
+      console.log("newPosition", newPosition);
+      if (piece.endsWith("k") || piece.endsWith("r")) {
+        updateCastlingState(piece, from[0], from[1]);
+      }
+      if (arbiter.insufficientMaterial(newPosition)) {
+        dispatch(detectInsufficientMaterial());
+      }
+      if (arbiter.isStalemate(newPosition, opponent, castleDirection)) {
+        dispatch(detectStalemate());
+      }
+      if (arbiter.isCheckMate(newPosition, opponent, castleDirection)) {
+        const winner = opponent === "w" ? "Black" : "White";
+        dispatch(detectCheckmate(winner));
+      }
+      dispatch(makeNewMove(newPosition));
+      dispatch(clearCandidateMoves());
+      return newPosition;
+    }
+  };
+
+  // Handle AI moves for black's turn
+  // React.useEffect(() => {
+  //   if (appState.turn === "b") {
+  //     getAiMove(currentState);
+  //   }
+  // }, [appState.turn, currentState]);
+
+  const move = async (e) => {
     const { x, y } = calculateCoordinates(e);
     const [piece, rank, file] = e.dataTransfer.getData("text").split(",");
+    console.log("piece", piece);
+    console.log("rank", rank);
+    console.log("mfile", file);
+    console.log("x", x);
+    console.log("y", y);
     const castleDirection =
       appState.castleDirection[`${piece.startsWith("w") ? "b" : "w"}`];
     const opponent = piece.startsWith("w") ? "b" : "w";
+    console.log("appState.turn", appState.turn);
+    // if (appState.turn === "b") {
+    //   const newPosition = await getAiMove(currentState);
+    //   console.log("newPosition", newPosition);
+    //   return;
+    // }
     if (
       appState.candidateMoves.find((move) => move[0] === x && move[1] === y)
     ) {
@@ -63,7 +119,14 @@ const Pieces = () => {
         x,
         y,
       });
-      console.log("newPosition", newPosition);
+      // const newPosition = arbiter.performMove({
+      //   piece: "bk",
+      //   rank: 7,
+      //   file: 4,
+      //   currentPosition: currentState,
+      //   x: 4,
+      //   y: 4,
+      // });
       // Check for pawn promotion
       if (piece.endsWith("p") && (x === 0 || x === 7)) {
         dispatch(makeNewMove(newPosition));
