@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from "react";
 import { io } from "socket.io-client";
-import dotenv from "dotenv";
+
 const RoomContext = createContext();
-dotenv.config();
+// dotenv.config();
 export const socket = io(process.env.REACT_APP_SERVER_URL);
 
 export const RoomProvider = ({ children }) => {
@@ -12,6 +12,7 @@ export const RoomProvider = ({ children }) => {
   const [members, setMembers] = useState([]);
   const [status, setStatus] = useState("");
   const [currentTurnColor, setCurrentTurnColor] = useState(null);
+
   return (
     <RoomContext.Provider
       value={{
