@@ -174,35 +174,7 @@ npm run dev
 - **Visual Feedback**: Valid moves are highlighted on the board
 - **Turn Indicator**: See whose turn it is at the top of the screen
 
-## 🏗️ Project Structure
 
-```
-
-chess/
-├── public/ # Static assets
-├── src/
-│ ├── components/ # React components
-│ │ ├── Board/ # Chess board components
-│ │ ├── GameStatus/ # Game status displays
-│ │ ├── Modal/ # Promotion and other modals
-│ │ └── Pieces/ # Chess piece components
-│ ├── contexts/ # React contexts
-│ │ ├── Context.js # App state context
-│ │ └── RoomContext.js # Room management context
-│ ├── reducer/ # State management
-│ │ ├── actions/ # Redux-style actions
-│ │ └── reducer.js # Main reducer
-│ ├── arbiter/ # Game logic
-│ │ ├── arbiter.js # Main game rules
-│ │ ├── getMoves.js # Move generation
-│ │ └── move.js # Move execution
-│ ├── services/ # External services
-│ ├── assets/ # Images and icons
-│ └── App.js # Main application component
-├── package.json # Dependencies and scripts
-└── README.md # This file
-
-```
 
 ## 🛠️ Technology Stack
 
