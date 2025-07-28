@@ -46,3 +46,9 @@ export const detectCheckmate = (opponent) => {
     payload: opponent,
   };
 };
+export const syncTurn = (turn) => {
+  return {
+    type: "SYNC_TURN",
+    payload: turn,
+  };
+};

@@ -1,5 +1,6 @@
 @import "./constants.css";
 @import url("https://fonts.googleapis.com/css2?family=Sofia+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap");
 
 html,
 body {
@@ -15,6 +16,173 @@ body {
   font-family: "Sofia Sans", sans-serif;
   grid-template-columns: auto 220px;
 }
+
+/* Chess App Container */
+.chess-app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  display: flex;
+  flex-direction: column;
+  font-family: "Sofia Sans", sans-serif;
+}
+
+/* Chess Header */
+.chess-header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  padding: 20px 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.chess-title h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ecf0f1;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+}
+
+.chess-subtitle {
+  font-size: 1rem;
+  color: #bdc3c7;
+  margin-top: 5px;
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+/* Turn Indicator */
+.turn-indicator {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px 25px;
+  border-radius: 15px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.turn-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.turn-label {
+  font-size: 0.9rem;
+  color: #bdc3c7;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.turn-player {
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+.turn-player.white {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  color: #495057;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.turn-player.black {
+  background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+  color: #f8f9fa;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.white-turn .turn-player {
+  border: 2px solid #28a745;
+}
+
+.black-turn .turn-player {
+  border: 2px solid #6c757d;
+}
+
+/* Chess Main */
+.chess-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chess-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px 20px;
+  }
+
+  .chess-title h1 {
+    font-size: 2rem;
+  }
+
+  .chess-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .turn-indicator {
+    padding: 12px 20px;
+  }
+
+  .turn-player {
+    font-size: 1.1rem;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chess-title h1 {
+    font-size: 1.5rem;
+  }
+
+  .chess-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .turn-label {
+    font-size: 0.8rem;
+  }
+
+  .turn-player {
+    font-size: 1rem;
+    padding: 5px 10px;
+  }
+}
+
 button {
   background: var(--dark-tile);
   color: var(--light-tile);

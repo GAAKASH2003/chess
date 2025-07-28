@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Piece from "./Piece";
-import { useRef } from "react";
+// import { useRef } from "react";
+// import { io } from "socket.io-client";
+import { socket, useRoomContext } from "../../contexts/RoomContext";
 // import "Pieces.css";
 import { createPosition, copyPosition } from "../../helper";
 import { useAppContext } from "../../contexts/Context";
@@ -12,7 +14,6 @@ import {
   detectInsufficientMaterial,
 } from "../../reducer/actions/move";
 import { getAIMove } from "../../services/aiService";
-// import { useState } from "react";
 import {
   makeNewMove,
   clearCandidateMoves,
@@ -23,7 +24,15 @@ import arbiter from "../../arbiter/arbiter";
 const Pieces = () => {
   const ref = useRef();
   const { appState, dispatch } = useAppContext();
-
+  const { room } = useRoomContext();
+  // const [newPosition, setNewPosition] = useState(null);
+  // const [piece, setPiece] = useState(null);
+  // const [rank, setRank] = useState(null);
+  // const [file, setFile] = useState(null);
+  // const [x, setX] = useState(null);
+  // const [y, setY] = useState(null);
+  // const [opponent, setOpponent] = useState(null);
+  // const [castleDirection, setCastleDirection] = useState(null);
   const currentState = appState.position[appState.position.length - 1];
 
   const calculateCoordinates = (e) => {
@@ -45,45 +54,38 @@ const Pieces = () => {
       dispatch(updateCastling(direction));
     }
   };
-
-  const getAiMove = async (currentState) => {
-    const aiMove = await getAIMove(currentState);
-
-    if (aiMove) {
-      const { from, to } = aiMove;
-      const piece = currentState[from[0]][from[1]];
-      const castleDirection =
-        appState.castleDirection[`${piece.startsWith("w") ? "b" : "w"}`];
-      const opponent = piece.startsWith("w") ? "b" : "w";
-
-      const newPosition = arbiter.performMove({
-        piece,
-        rank: from[0],
-        file: from[1],
-        currentPosition: currentState,
-        x: to[0],
-        y: to[1],
-      });
-      console.log("newPosition", newPosition);
-      if (piece.endsWith("k") || piece.endsWith("r")) {
-        updateCastlingState(piece, from[0], from[1]);
-      }
-      if (arbiter.insufficientMaterial(newPosition)) {
-        dispatch(detectInsufficientMaterial());
-      }
-      if (arbiter.isStalemate(newPosition, opponent, castleDirection)) {
-        dispatch(detectStalemate());
-      }
-      if (arbiter.isCheckMate(newPosition, opponent, castleDirection)) {
-        const winner = opponent === "w" ? "Black" : "White";
-        dispatch(detectCheckmate(winner));
-      }
+  const dispatchNewPosition = (
+    newPosition,
+    opponent,
+    castleDirection,
+    piece,
+    rank,
+    file,
+    x,
+    y
+  ) => {
+    // const { piece, rank, file, x, y } = newPosition;
+    if (piece.endsWith("p") && (x === 0 || x === 7)) {
       dispatch(makeNewMove(newPosition));
-      dispatch(clearCandidateMoves());
-      return newPosition;
+      dispatch(showPromotion([x, y]));
+    } else if (piece.endsWith("k") || piece.endsWith("r")) {
+      updateCastlingState(piece, rank, file);
+      dispatch(makeNewMove(newPosition));
+    } else {
+      dispatch(makeNewMove(newPosition));
     }
+    if (arbiter.insufficientMaterial(newPosition)) {
+      dispatch(detectInsufficientMaterial());
+    }
+    if (arbiter.isStalemate(newPosition, opponent, castleDirection)) {
+      dispatch(detectStalemate());
+    }
+    if (arbiter.isCheckMate(newPosition, opponent, castleDirection)) {
+      const winner = opponent === "w" ? "Black" : "White";
+      dispatch(detectCheckmate(winner));
+    }
+    dispatch(clearCandidateMoves());
   };
-
   // Handle AI moves for black's turn
   // React.useEffect(() => {
   //   if (appState.turn === "b") {
@@ -91,6 +93,11 @@ const Pieces = () => {
   //   }
   // }, [appState.turn, currentState]);
 
+  // useEffect(() => {
+  //   if (appState.turn === "b") {
+  //     getAiMove(currentState);
+  //   }
+  // }, []);
   const move = async (e) => {
     const { x, y } = calculateCoordinates(e);
     const [piece, rank, file] = e.dataTransfer.getData("text").split(",");
@@ -119,36 +126,37 @@ const Pieces = () => {
         x,
         y,
       });
-      // const newPosition = arbiter.performMove({
-      //   piece: "bk",
-      //   rank: 7,
-      //   file: 4,
-      //   currentPosition: currentState,
-      //   x: 4,
-      //   y: 4,
-      // });
-      // Check for pawn promotion
-      if (piece.endsWith("p") && (x === 0 || x === 7)) {
-        dispatch(makeNewMove(newPosition));
-        dispatch(showPromotion([x, y]));
-      } else if (piece.endsWith("k") || piece.endsWith("r")) {
-        updateCastlingState(piece, rank, file);
-        dispatch(makeNewMove(newPosition));
-      } else {
-        dispatch(makeNewMove(newPosition));
-      }
-      if (arbiter.insufficientMaterial(newPosition)) {
-        dispatch(detectInsufficientMaterial());
-      }
-      if (arbiter.isStalemate(newPosition, opponent, castleDirection)) {
-        dispatch(detectStalemate());
-      }
-      if (arbiter.isCheckMate(newPosition, opponent, castleDirection)) {
-        const winner = opponent === "w" ? "Black" : "White";
-        dispatch(detectCheckmate(winner));
-      }
+      console.log("newPositionnnnnnnnn", newPosition);
+      // setNewPosition(newPosition);
+      // setPiece(piece);
+      // setRank(rank);
+      // setFile(file);
+      // setX(x);
+      // setY(y);
+      // setOpponent(opponent);
+      dispatchNewPosition(
+        newPosition,
+        opponent,
+        castleDirection,
+        piece,
+        rank,
+        file,
+        x,
+        y
+      );
+      socket.emit("onmove", {
+        room: room,
+        currentTurn: socket.id,
+        newPosition,
+        opponent,
+        castleDirection,
+        piece,
+        rank,
+        file,
+        x,
+        y,
+      });
     }
-    dispatch(clearCandidateMoves());
   };
 
   const ondrop = (e) => {

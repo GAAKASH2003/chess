@@ -1,4 +1,5 @@
 import { Status } from "../constant";
+
 export const reducer = (state, action) => {
   switch (action.type) {
     case "NEW_MOVE":
@@ -9,6 +10,11 @@ export const reducer = (state, action) => {
         turn,
         position,
         promotionSquare: null,
+      };
+    case "SYNC_TURN":
+      return {
+        ...state,
+        turn: action.payload,
       };
     case "GENERATE_MOVES":
       return {
