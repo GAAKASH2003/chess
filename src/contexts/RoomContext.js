@@ -1,8 +1,9 @@
 import { createContext, useContext, useState } from "react";
 import { io } from "socket.io-client";
+import dotenv from "dotenv";
 const RoomContext = createContext();
-
-export const socket = io("http://localhost:3001");
+dotenv.config();
+export const socket = io(process.env.REACT_APP_SERVER_URL);
 
 export const RoomProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
